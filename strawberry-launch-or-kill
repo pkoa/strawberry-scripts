@@ -1,0 +1,11 @@
+#!/bin/sh
+
+pid=$(pgrep strawberry)
+
+if pgrep -x "strawberry" > /dev/null; then
+	kill -9 $(pgrep -x "strawberry") &
+	notify-send  -t 1000 "strawbery killed" &
+else
+	strawberry &
+	notify-send  -t 1000 "strawberry started" &
+fi

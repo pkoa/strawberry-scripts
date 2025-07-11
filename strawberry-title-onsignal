@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Outputs the currently playing song and state. 
+# Uses playersctl and dbus-monitor
+
+# output_file saves the metadata to a location as well.
+
+
+output_file="$XDG_CACHE_HOME/music-name.txt"
+
+function strawberrysignalon(){
+	status="$(playerctl metadata --player=strawberry --format '{{ status }}')"
+	shuffle="$(playerctl shuffle  --player=strawberry | sed 's/Off/ /g' | sed 's/On/  /g')"
+	full="$(playerctl metadata --player=strawberry --format '{{ artist }} — {{ title }}')"
+
+	if [[ $full > 0 ]] ; then
+		if [[ "$status" = "Playing" ]]; then
+			echo "$shuffle $full" > "$output_file"
+			echo "$shuffle $full"
+		else
+			echo "$shuffle $full" > "$output_file"
+			echo "$shuffle $full"
+		fi
+	else
+		echo "" > "$output_file"
+		echo ""
+	fi	
+}
+
+dbus-monitor "type='signal',sender='org.mpris.MediaPlayer2.strawberry'" |  while read -r line; do 
+	if echo "$line" | grep -E 'variant\s+boolean false|PlaybackStatus' > /dev/null; then
+		strawberrysignalon
+	fi
+done

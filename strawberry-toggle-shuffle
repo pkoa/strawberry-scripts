@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Toggles normal shuffle in strawberry.
+# Uses playerctl and dbus
+
+status="$(playerctl shuffle --player=strawberry)"
+
+if [[ "$status" == "Off" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"Shuffle" variant:boolean:true
+	strawberry --play-pause & strawberry --play-pause
+	notify-send -t 500 "Shuffle enabled"
+else
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"Shuffle" variant:boolean:false
+	notify-send -t 500 "Shuffle disabled"
+fi

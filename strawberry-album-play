@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Uses rofis native filebrowser. Shift+Enter makes strawberry play selected folder.
+# Change ROFI_THEME and MUSIC_FOLDER to suit your configuration.
+
+ROFI_THEME="${HOME}/.config/rofi/launchers/type-4/style-music.rasi"
+MUSIC_FOLDER="/mnt/seagate-e/music"
+
+rofi -sorting-method fzf -theme "$ROFI_THEME" -show filebrowser -filebrowser-directory "$MUSIC_FOLDER" -filebrowser-command "strawberry --play temp --load $1"

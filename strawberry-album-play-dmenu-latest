@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Uses rofi -dmenu to list out all folders in your music folder with last changed first, good for looking up recently accuired albums. Enter makes strawberry play all music files from the selected folder.
+# Does not use rofi -select since I use this to browse recent albums.
+ 
+# CURRENT_FOLDER_LOCATION is used for persitance
+# MUSIC_FOLDER should be changed to your music folder
+# ROFI_THEME should be changed to your rofi theme
+
+CURRENT_FOLDER_LOCATION="$XDG_CACHE_HOME/strawberry/current-folder"
+CURRENT_FOLDER=$(cat "$CURRENT_FOLDER_LOCATION")
+MUSIC_FOLDER="/mnt/seagate-e/music/"
+ROFI_THEME="${HOME}/.config/rofi/launchers/type-4/style-music.rasi"
+
+PLAY_FOLDER=$(find "$MUSIC_FOLDER" -mindepth 1 -type d  -printf '%T@ %p\n' | sort -rn | cut -d' ' -f2- | sed "s#$MUSIC_FOLDER##" | rofi -dmenu -i -no-custom -window-title "♫" -sorting-method fzf -theme "$ROFI_THEME")
+
+[[ -n "$PLAY_FOLDER" ]] || exit 1
+
+strawberry --play temp --load "$MUSIC_FOLDER$PLAY_FOLDER"
+echo "$PLAY_FOLDER" > "$XDG_CACHE_HOME/strawberry/current-folder"

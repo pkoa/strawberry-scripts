@@ -1,0 +1,50 @@
+#!/bin/sh
+
+#A big if-elif thing that handles strawberry playback states via rofi -dmenu
+
+# ROFI_THEME should be changed to your rofi theme
+
+
+ROFI_THEME="${HOME}/.config/rofi/launchers/type-4/style-music.rasi"
+
+rofi_output="$( echo -e 'Shuffle off\nShuffle on\n---\nRepeat off\nRepeat Album\nRepeat Playlist\nRepeat Track\n---\nStop\nKill\nShow' | rofi -dmenu  -theme $ROFI_THEME -theme-str 'window {width: 300px; height: 340px; }  inputbar{enabled:false;}')"
+
+[[ -n "$rofi_output" ]] || exit 1
+echo "$rofi_output"
+
+if [[ "$rofi_output" == "Shuffle on" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"Shuffle" variant:boolean:true
+	strawberry --play-pause & strawberry --play-pause
+	notify-send -t 500 "Shuffle enabled"
+elif [[ "$rofi_output" == "Shuffle off" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"Shuffle" variant:boolean:false
+	notify-send -t 500 "Shuffle disabled"
+elif [[ "$rofi_output" == "Repeat Track" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"LoopStatus" variant:string:"Track" 
+	notify-send -t 500 "Repeat Track enabled"
+	exit 0
+elif [[	 "$rofi_output" == "Repeat Album" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"LoopStatus" variant:string:"Album" 
+	notify-send -t 500 "Repeat Album enabled"
+	exit 0
+elif [[	 "$rofi_output" == "Repeat Playlist" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"LoopStatus" variant:string:"Playlist" 
+	notify-send -t 500 "Repeat Playlist enabled"
+	exit 0
+elif [[ "$rofi_output" == "Repeat off" ]];then
+	dbus-send --print-reply --dest=org.mpris.MediaPlayer2.strawberry /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Set string:"org.mpris.MediaPlayer2.Player" string:"LoopStatus" variant:string:"None" 
+	notify-send -t 500 "Repeat disabled"
+	exit 0
+elif [[ "$rofi_output" == "Show" ]];then
+	strawberry
+	exit 0
+elif [[ "$rofi_output" == "Stop" ]];then
+	strawberry --stop
+	exit 0
+elif [[ "$rofi_output" == "Kill" ]];then
+	strawberry --stop
+	kill -9 $(pgrep -x "strawberry")
+	exit 0
+else
+	exit 0
+fi
