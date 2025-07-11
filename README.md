@@ -3,7 +3,7 @@ Scripts for handling music playback in the strawberry music player.
 
 ## Reqs:
 * Strawberry
-* Rofi
+* Rofi - i included the style i use for album-play
 * dbus
 * Some configuration
 
