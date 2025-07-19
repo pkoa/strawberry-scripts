@@ -1,5 +1,5 @@
 # Strawberry scripts
-Scripts for handling music playback in the strawberry music player.
+Scripts for handling music playback and folder navigation in the strawberry music player.
 
 ## Reqs:
 * Strawberry

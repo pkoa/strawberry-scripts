@@ -15,5 +15,19 @@ PLAY_FOLDER=$(find "$MUSIC_FOLDER" -mindepth 1 -type d | sed "s#$MUSIC_FOLDER##"
 
 [[ -n "$PLAY_FOLDER" ]] || exit 1
 
-strawberry --play temp --load "$MUSIC_FOLDER$PLAY_FOLDER"
-echo "$PLAY_FOLDER" > "$CURRENT_FOLDER_LOCATION"
+ROFI_CHOICE="$(echo -e 'Replace\nAppend' | rofi -dmenu  -theme $ROFI_THEME -theme-str 'window {width: 300px; height: 70px; }  inputbar{enabled:false;}')"
+
+[[ -n "$ROFI_CHOICE" ]] || exit 1
+
+if [[ "$ROFI_CHOICE" == "Replace" ]];then
+	strawberry --play temp --load "$MUSIC_FOLDER$PLAY_FOLDER"
+	echo "$PLAY_FOLDER" > "$XDG_CACHE_HOME/strawberry/current-folder"
+	exit 0
+elif [[ "$ROFI_CHOICE" == "Append" ]]
+	strawberry --append "$MUSIC_FOLDER$PLAY_FOLDER"
+	echo "$PLAY_FOLDER" > "$XDG_CACHE_HOME/strawberry/current-folder"
+	exit 0
+fi
+
+#strawberry --play temp --load "$MUSIC_FOLDER$PLAY_FOLDER"
+#echo "$PLAY_FOLDER" > "$CURRENT_FOLDER_LOCATION"
